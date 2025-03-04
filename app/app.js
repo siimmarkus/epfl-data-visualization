@@ -7,7 +7,7 @@ app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
 
 const path = require('path');
-app.use(express.static(path.join(__dirname, "public")));
+app.use('/static', express.static(path.join(__dirname, "public")));
 
 // Routes
 app.get('/', (req, res) => {
@@ -19,4 +19,4 @@ app.get('/about', (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
