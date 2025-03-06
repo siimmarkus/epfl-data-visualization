@@ -33,10 +33,35 @@ function createMap(json) {
   rotationGroup.attr("transform", `rotate(70, ${xCenter}, ${yCenter})`);
 
   // Color the paths
-  rotationGroup.selectAll("path").style("fill", function (d) {
-    var value = 0; // d.properties.income;
+  var paths = rotationGroup.selectAll("path").style("fill", function (d) {
+    var value = Math.sqrt(d.properties.AREA); 
     return value ? color(value) : "#000000";
   });
+
+  var tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+  paths
+    .on("mouseover", function (event, d) {
+      d3.select(this)
+        .style("fill", "orange") // Change fill color on hover
+        .style("cursor", "pointer"); // Change cursor to pointer
+      tooltip.transition().duration(200).style("opacity", 0.9);
+      tooltip
+        .html(d.properties.MNIMI)
+        .style("left", event.pageX + "px")
+        .style("top", event.pageY - 28 + "px");
+    })
+    .on("mouseout", function (event, d) {
+      d3.select(this).style("fill", function (d) {
+        var value = Math.sqrt(d.properties.AREA); // Reset to original color
+        return value ? color(value) : "#000000";
+      });
+      tooltip.transition().duration(500).style("opacity", 0);
+    });
 
   // Create zoom behavior
   var zoom = d3.zoom().scaleExtent([0.5, 1.5]).on("zoom", zoomed);
@@ -48,7 +73,6 @@ function createMap(json) {
   function zoomed(event) {
     zoomGroup.attr("transform", event.transform);
   }
-
 }
 
 d3.json(data_directory)
