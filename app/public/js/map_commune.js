@@ -1,5 +1,5 @@
 const data_directory = "/static/data/geojson/maakond.json";
-const color = d3.scaleSequential(d3.interpolateViridis).domain([0, 120000]);
+const color = d3.scaleSequential(d3.interpolateViridis).domain([0, 100000]);
 
 function createMap(json) {
   var container = d3.select("body").select("#map-container");
@@ -27,14 +27,14 @@ function createMap(json) {
   // find the center of the map (for rotation)
   var node = svg.node();
   var xCenter = node.getBBox().x + node.getBBox().width / 2;
-  var yCenter = node.getBBox().y + node.getBBox().height / 2;
+  var yCenter = node.getBBox().y + node.getBBox().height / 1.7;
 
   // Apply scaling and rotation
   rotationGroup.attr("transform", `rotate(70, ${xCenter}, ${yCenter})`);
 
   // Color the paths
   var paths = rotationGroup.selectAll("path").style("fill", function (d) {
-    var value = Math.sqrt(d.properties.AREA); 
+    var value = Math.sqrt(d.properties.AREA);
     return value ? color(value) : "#000000";
   });
 
@@ -73,6 +73,43 @@ function createMap(json) {
   function zoomed(event) {
     zoomGroup.attr("transform", event.transform);
   }
+
+  var legendWidth = 300; // Adjust as needed
+  var legendHeight = 50; // Adjust as needed
+
+  var legend = svg
+    .append("g")
+    .attr("class", "legend")
+    .attr(
+      "transform",
+      "translate(" + (width - legendWidth) / 2 + "," + 10 + ")"
+    );
+
+  var legendItems = legend
+    .selectAll(".legend-item")
+    .data(color.ticks(6))
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .attr("transform", function (d, i) {
+      return "translate(" + i * (legendWidth / 6) + ", 140)";
+    });
+
+  legendItems
+    .append("rect")
+    .attr("width", 20)
+    .attr("height", 20)
+    .style("fill", color);
+
+  legendItems
+    .append("text")
+    .attr("x", 10)
+    .attr("y", -5)
+    .attr("text-anchor", "middle")
+    .style("font-size", "12px")
+    .text(function (d) {
+      return d;
+    });
 }
 
 d3.json(data_directory)
