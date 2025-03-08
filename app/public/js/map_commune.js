@@ -45,6 +45,11 @@ function createMap(json) {
     .style("opacity", 0);
 
   paths
+    .on("click", function (event, d) {
+      const pathId = d.properties.MNIMI;
+      const formattedPathId = formatPathID(pathId);
+      window.location.href = `/county/${formattedPathId}`;
+    })
     .on("mouseover", function (event, d) {
       d3.select(this)
         .style("fill", "orange") // Change fill color on hover
@@ -124,3 +129,10 @@ d3.json(data_directory)
   .catch(function (error) {
     console.error("Error loading the GeoJSON file:", error);
   });
+
+function formatPathID(pathID) {
+  return pathID
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zõäöõü0-9-]/g, "");
+}
