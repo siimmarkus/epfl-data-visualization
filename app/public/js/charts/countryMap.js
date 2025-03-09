@@ -40,6 +40,7 @@ export function createMap(geoJson) {
   paths.on("click", (event, d) => {
     const pathId = formatPathID(d.properties.MNIMI);
     window.location.href = `/county/${pathId}`;
+    sessionStorage.setItem("countyId", d.properties.MKOOD); 
   });
 
   // Add zoom functionality
